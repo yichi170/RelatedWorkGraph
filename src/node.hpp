@@ -1,3 +1,6 @@
+#ifndef NODE_HPP
+#define NODE_HPP
+
 #include <cstdint>
 #include <algorithm>
 #include <utility>
@@ -6,6 +9,7 @@
 
 class Coord {
 public:
+	Coord() = delete;
 	Coord(double x, double y, int coord_type, int mass = 1)		// default constructor
 	: x(x), y(y), coord_type(coord_type), mass(mass) {}
 
@@ -59,3 +63,5 @@ bool operator==(Coord const &, Coord const &);
 bool operator!=(Coord const &, Coord const &);
 double dist(const Coord &, const Coord &);
 Coord min_with_scalar(const Coord &, double);
+
+#endif
