@@ -13,12 +13,5 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: make
-      run: |
-        echo "cd src/"
-        cd src/
-        make
-    - name: make test
-      run: make test
-    - name: make clean
-      run: make clean
+    - name: make & make test
+      run: make autograde
