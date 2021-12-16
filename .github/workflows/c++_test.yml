@@ -8,12 +8,14 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
+    outputs:
+      output1: ${{ steps.step1.outputs.test }}
     steps:
     - uses: actions/checkout@v2
-    - name: make test
+    - id: step1
+      name: make test
       run: make test
-    - name: test pybind11
+    - id: step2
+      name: test pybind11
       run: make pybind
