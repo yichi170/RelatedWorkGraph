@@ -1,10 +1,12 @@
 # Mac
 *.DS_Store
+*.dSYM
 
 # Prerequisites
 *.d
 
 # Compiled Object files
+target
 *.slo
 *.lo
 *.o

@@ -8,6 +8,9 @@ project:
 test: project
 	make test -C src/
 
+pybind:
+	make pybind -C src/
+
 clean:
 	make clean -C src/
 

@@ -13,5 +13,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: make & make test
-      run: make autograde
+    - name: make test
+      run: make test
+    - name: test pybind11
+      run: make pybind

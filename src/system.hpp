@@ -13,7 +13,7 @@ class NodeSystem {
 public:
     NodeSystem(const std::vector< std::vector<int> > &relation, 
                int n_vertex, int width, int height, 
-               double temp = 100.0, int niter=100)
+               double temp, int niter)
                : n_vertex(n_vertex), 
                  width(width), height(height), 
                  temp(temp), niter(niter), relation(relation) {
@@ -150,12 +150,18 @@ public:
 
     double f_attract(double x) { return x * x / k; };
     double f_repulse(double x) { return k * k / x; };
+
+    void settemp(const double &temp_) { temp = temp_; };
+    const double &gettemp() const { return temp; };
+
+    void setniter(const int &niter_) { niter = niter_; };
+    const int &getniter() const { return niter; };
     
 private:
     int n_vertex;
     int width, height;
-    double temp;
-    int niter;
+    double temp = 100.0;
+    int niter = 100;
 
     double k; //, gamma = 0.0;
     // double I_max = 10.0;
