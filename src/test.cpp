@@ -16,7 +16,7 @@ int main() {
 	a[2].push_back(2);
 	a[2].push_back(3);
 
-	NodeSystem ns(a, 3, 100, 100);
+	NodeSystem ns(a, 3, 100, 100, 100.0, 100);
 	ns.run();
 
 	const std::vector<Coord>& position = ns.getVector();
