@@ -38,11 +38,16 @@ public:
     };
 
     void run() {
-        for (int i = 0; i < position.size(); i++)
-            std::cout << position[i];
+        // for (int i = 0; i < position.size(); i++)
+        //     std::cout << position[i];
         for (int t = 0; t < this->niter; t++) {
+            // std::cout << t << ' ';
             this->step(t);
         }
+        // std::cout << '\n';
+
+        // for (int i = 0; i < position.size(); i++)
+        //     std::cout << position[i];
         
         // return something for use.
     }

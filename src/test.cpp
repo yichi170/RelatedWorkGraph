@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cassert>
 #include "node.hpp"
 #include "system.hpp"
 
@@ -21,11 +22,16 @@ int main() {
 
 	const std::vector<Coord>& position = ns.getVector();
 
-	cout << "test\n";
-	cout << position.size() << '\n';
-	for (int i = 0; i < 3; i++) {
-		cout << position[i].x << " " << position[i].y << '\n';
-	}
+	assert(position.size() != 0);
+
+	assert(position[2].x < 101.0);
+	assert(position[2].y < 101.0);
+
+	assert(position[1].x < 101.0);
+	assert(position[1].y < 101.0);
+	
+	assert(position[0].x < 101.0);
+	assert(position[0].y < 101.0);
 
 	return 0;
 }
