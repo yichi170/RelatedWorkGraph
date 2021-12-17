@@ -2,6 +2,8 @@
 #define SYSTEM_HPP
 
 #include "node.hpp"
+#include <cstddef>
+#include <utility>
 #include <vector>
 #include <cmath>
 
@@ -11,12 +13,12 @@ std::default_random_engine gen2 = std::default_random_engine(rd());
 
 class NodeSystem {
 public:
-    NodeSystem(const std::vector< std::vector<int> > &relation, 
-               int n_vertex, int width, int height, 
-               double temp, int niter)
-               : n_vertex(n_vertex), 
-                 width(width), height(height), 
-                 temp(temp), niter(niter), relation(relation) {
+    NodeSystem(int n_vertex, int width, int height, 
+               double temp, int niter, 
+               const std::vector< std::vector<int> > && relation)
+               : n_vertex(n_vertex), width(width), height(height), 
+                 temp(temp), niter(niter), relation(std::move(relation)) {
+        
         std::uniform_real_distribution<> disx(0, width);
         std::uniform_real_distribution<> disy(0, height);
 
@@ -27,7 +29,7 @@ public:
         position.reserve(n_vertex);
 
         for (int i = 0; i < n_vertex; i++) {
-            if (i < relation.size())
+            if (i < (int)relation.size())
                 position.emplace_back(randfuncx(), randfuncy(), 1, static_cast<int>(relation[i].size()));
             else
                 position.emplace_back(randfuncx(), randfuncy(), 1);
@@ -38,16 +40,16 @@ public:
     };
 
     void run() {
-        // for (int i = 0; i < position.size(); i++)
-        //     std::cout << position[i];
+        for (int i = 0; i < (int)position.size(); i++)
+            std::cout << position[i];
         for (int t = 0; t < this->niter; t++) {
-            // std::cout << t << ' ';
+            std::cout << t << ' ';
             this->step(t);
         }
-        // std::cout << '\n';
+        std::cout << '\n';
 
-        // for (int i = 0; i < position.size(); i++)
-        //     std::cout << position[i];
+        for (int i = 0; i < (int)position.size(); i++)
+            std::cout << position[i];
         
         // return something for use.
     }
@@ -71,24 +73,36 @@ public:
     }
 
     void compute_attraction() {
-        std::vector< std::vector<int> >::iterator row;
-        std::vector<int>::iterator col;
-        for (row = relation.begin(); row != relation.end(); row++) {
-            for (col = row->begin() + 1; col != row->end(); col++) {
-                int i = *(row->begin()), j = *col;
+        // std::vector< std::vector<int> >::iterator row;
+        // std::vector<int>::iterator col;
+        
+        for (size_t row = 0; row < relation.size(); row++) {
+            for (size_t col = 1; col < relation[row].size(); col++) {
+                int i = relation[row][0], j = relation[row][col];
                 double distance = dist(position[i], position[j]);
                 double fa = f_attract(distance);
                 Coord fa_xy = (position[j] - position[i]) * (fa / distance);
-                
                 force[i] += fa_xy;
                 force[j] -= fa_xy;
             }
         }
+        
+        // for (row = relation.begin(); row != relation.end(); row++) {
+        //     for (col = row->begin() + 1; col != row->end(); col++) {
+        //         int i = *(row->begin()), j = *col;
+        //         double distance = dist(position[i], position[j]);
+        //         double fa = f_attract(distance);
+        //         Coord fa_xy = (position[j] - position[i]) * (fa / distance);
+                
+        //         force[i] += fa_xy;
+        //         force[j] -= fa_xy;
+        //     }
+        // }
     }
 
     void compute_repulsion() {
-        for (int i = 0; i < force.size()-1; i++) {
-            for (int j = i+1; j < force.size(); j++) {
+        for (size_t i = 0; i < force.size()-1; i++) {
+            for (size_t j = i+1; j < force.size(); j++) {
                 double distance = dist(position[i], position[j]);
                 double fr = f_repulse(distance);
                 Coord fr_xy = (position[j] - position[i]) * (fr / distance);

@@ -6,6 +6,11 @@ PYBINC = -I../extern/pybind11/include
 PYINC = `python3 -m pybind11 --includes` `python3-config --includes`
 OUTPUT = _graph`python3-config --extension-suffix`
 
+UNAME = $(shell uname)
+
+ifeq ($(UNAME), Darwin)
+	CXXFLAGS += $(OSXFLAG)
+endif
 
 .PHONY: all clean test
 
@@ -15,11 +20,11 @@ target: test.cpp node.cpp
 	$(CXX) $(CXXFLAGS) $^ -o $@
 
 pybind: pybind.cpp
-	$(CXX) $(CXXFLAGS) $(SHRFLAG) $(OSXFLAG) $(PYBINC) $(PYINC) $< -o $(OUTPUT)
+	$(CXX) $(CXXFLAGS) $(SHRFLAG) $(PYBINC) $(PYINC) $< -o $(OUTPUT)
 
 test: target
 	./target
 
 clean:
-	rm -f *.o target
+	rm -f *.so *.o target
 	rm -rf *.dSYM/

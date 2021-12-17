@@ -13,9 +13,9 @@ namespace py = pybind11;
 PYBIND11_MODULE(system, m) {
 	py::class_<NodeSystem>(m, "NodeSystem")
 		.def(py::init<
-			 const std::vector<std::vector<int>> &, 
-			 int, int, int, double, int
-			 >())
+			 int, int, int, double, int, 
+			 const std::vector<std::vector<int>> &&
+			 >(), py::return_value_policy::move)
 		// .def("setparam", )
 		;
 }
