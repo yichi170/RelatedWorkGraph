@@ -35,3 +35,6 @@ target
 *.exe
 *.out
 *.app
+
+# Python
+*__pycache__/

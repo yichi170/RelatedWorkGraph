@@ -3,6 +3,9 @@
 #include "node.hpp"
 #include "system.hpp"
 
+#define x first
+#define y second
+
 using namespace std;
 
 int main() {
@@ -17,10 +20,10 @@ int main() {
 	a[2].push_back(0);
 	a[2].push_back(1);
 
-	NodeSystem ns(3, 100, 100, 100.0, 100, std::move(a));
+	NodeSystem ns(3, 100, 100, 100.0, 300, std::move(a));
 	ns.run();
 
-	const std::vector<Coord>& position = ns.getVector();
+	const std::vector<std::pair <double, double> >& position = ns.getVector();
 	assert(position.size() != 0);
 
 	assert(position[2].x < 101.0);
@@ -35,7 +38,6 @@ int main() {
 	cout << "test hello world\n";
 	return 0;
 }
-
 /*
 3
 0 1

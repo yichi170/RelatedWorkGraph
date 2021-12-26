@@ -6,6 +6,9 @@ project:
 	make -C src/
 
 test: project
+	make test -C test/
+
+cpptest: project
 	make test -C src/
 
 pybind:
@@ -13,6 +16,7 @@ pybind:
 
 clean:
 	make clean -C src/
+	make clean -C test/
 
-autograde: clean
+autotest: clean
 	make project && make test

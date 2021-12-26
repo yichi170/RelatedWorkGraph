@@ -10,12 +10,19 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(system, m) {
+PYBIND11_MODULE(nodepy, m) {
+
+	m.doc() = "Python Library for drawing the Related Work Graph of paper";
+
 	py::class_<NodeSystem>(m, "NodeSystem")
 		.def(py::init<
-			 int, int, int, double, int, 
-			 const std::vector<std::vector<int>> &&
+			 const int &, const int &, const int &, 
+			 const double &, const int &, 
+			 const std::vector< std::vector<int> > &&
 			 >(), py::return_value_policy::move)
-		// .def("setparam", )
+
+		.def("run", &NodeSystem::run)
+		
+		.def("getPos", &NodeSystem::getVector)
 		;
 }

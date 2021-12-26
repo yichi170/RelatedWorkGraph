@@ -4,27 +4,34 @@ SHRFLAG = -shared -fPIC
 OSXFLAG = -undefined dynamic_lookup
 PYBINC = -I../extern/pybind11/include
 PYINC = `python3 -m pybind11 --includes` `python3-config --includes`
-OUTPUT = _graph`python3-config --extension-suffix`
+TESTPATH = ../test
+OUTPUT = nodepy`python3-config --extension-suffix`
 
 UNAME = $(shell uname)
 
 ifeq ($(UNAME), Darwin)
-	CXXFLAGS += $(OSXFLAG)
+	OSXFLAGS += $(OSXFLAG)
 endif
 
-.PHONY: all clean test
+.PHONY: all clean test pybind
 
-all: target
+all: pybind
 
-target: test.cpp node.cpp
-	$(CXX) $(CXXFLAGS) $^ -o $@
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $<
 
-pybind: pybind.cpp
-	$(CXX) $(CXXFLAGS) $(SHRFLAG) $(PYBINC) $(PYINC) $< -o $(OUTPUT)
+pybind: pybind.cpp system.o node.o
+	$(CXX) $(CXXFLAGS) $(OSXFLAGS) $(SHRFLAG) $(PYBINC) $(PYINC) $^ -o $(TESTPATH)/$(OUTPUT)
 
-test: target
-	./target
+test: test.o node.o system.o
+	$(CXX) $(CXXFLAGS) $(OSXFLAGS) $^ -o $@
+
+testcpp: test
+	./test
 
 clean:
-	rm -f *.so *.o target
+	rm -f *.so *.o node test
 	rm -rf *.dSYM/
+
+# testpy: pybind
+# 	python3 ../test/test.py
