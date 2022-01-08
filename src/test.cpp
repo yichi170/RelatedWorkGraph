@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cassert>
+#include <utility>
 #include "node.hpp"
 #include "system.hpp"
 
@@ -9,18 +10,15 @@
 using namespace std;
 
 int main() {
-	vector< vector<int> > a(3);
+	vector< pair<int, int> > a(3);
 	
-	a[0].push_back(1);
-	a[0].push_back(2);
+	a[0] = std::make_pair(1, 2);
 
-	a[1].push_back(0);
-	a[1].push_back(2);
+	a[1] = std::make_pair(0, 2);
 	
-	a[2].push_back(0);
-	a[2].push_back(1);
+	a[2] = std::make_pair(0, 1);
 
-	NodeSystem ns(3, 100, 100, 100.0, 300, std::move(a));
+	NodeSystem ns(3, 100, 100, 100.0, std::move(a));
 	ns.run();
 
 	const std::vector<std::pair <double, double> >& position = ns.getVector();
