@@ -13,11 +13,19 @@ jobs:
     steps:
 
     - uses: actions/checkout@v2
+      with:
+        fetch-depth: 1
+        submodules: recursive
 
     - name: dependency (ubuntu)
       run: |
         sudo apt-get -qy install \
         make python3 python3-pip
+
+    - name: Install dependencies
+      run: |
+        python3 -m pip install --upgrade pip
+        pip install pybind11
 
     - id: step1
       name: make

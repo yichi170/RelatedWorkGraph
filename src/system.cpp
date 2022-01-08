@@ -80,7 +80,7 @@ void NodeSystem::compute_force() {
         }
         
         // compute_repulsion
-        for (size_t j = i+1; j < n_vertex; j++) {
+        for (int j = i+1; j < n_vertex; j++) {
             double distance = dist(position[i], position[j]);
             double fr = f_repulse(distance);
             Coord fr_xy = (position[j] - position[i]) * (fr / distance);
