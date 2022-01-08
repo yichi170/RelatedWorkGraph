@@ -20,7 +20,7 @@ jobs:
     - name: dependency (macOS)
       run: |
         brew install \
-        make python3 python3-pip
+        make python3
 
     - name: Install dependencies
       run: |
