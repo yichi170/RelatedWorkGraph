@@ -11,17 +11,16 @@ class NodeSystem {
 public:
     NodeSystem(const int & n_vertex, const int & width, 
                const int & height, const double & temp, 
-               const int & niter, 
-               const std::vector< std::vector<int> > && relation);
+               const std::vector< std::pair<int, int> > && relation);
     
     ~NodeSystem() = default;
     
     void run();
+    void run_times(int n);
     void step(int);
     
     void init();
-    void compute_attraction();
-    void compute_repulsion();
+    void compute_force();
     void compute_gravity();
     void update_position();
 
@@ -34,13 +33,12 @@ public:
 private:
     int n_vertex;
     int width = 500, height = 500;
-    double temp = 100.0;
+    double temp = 1e4;
     int niter = 100;
 
-    double k; //, gamma = 0.0;
-    // double I_max = 10.0;
-    // double sigma = 0.1;
-    std::vector< std::vector<int> > relation;
+    double k;
+    std::vector< std::pair<int, int> > relation;
+    std::vector< std::vector<int> > adj;
     std::vector<Coord> force;
     std::vector<Coord> position;
     mutable std::vector< std::pair<double, double> > position_pr;

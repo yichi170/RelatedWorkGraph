@@ -17,11 +17,13 @@ PYBIND11_MODULE(nodepy, m) {
 	py::class_<NodeSystem>(m, "NodeSystem")
 		.def(py::init<
 			 const int &, const int &, const int &, 
-			 const double &, const int &, 
-			 const std::vector< std::vector<int> > &&
+			 const double &, 
+			 const std::vector< std::pair<int, int> > &&
 			 >(), py::return_value_policy::move)
 
 		.def("run", &NodeSystem::run)
+
+		.def("run_times", &NodeSystem::run_times)
 		
 		.def("getPos", &NodeSystem::getVector)
 		;

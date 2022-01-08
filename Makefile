@@ -1,18 +1,24 @@
 all: project
 
-.PHONY: test clean autograde
+.PHONY: project test cpptest pybind clean autotest
 
 project:
 	make -C src/
 
-test: project
-	make test -C test/
-
 cpptest: project
-	make test -C src/
+	make testcpp -C src/
 
 pybind:
 	make pybind -C src/
+
+test: project
+	make test -C test/
+
+demo: project
+	make test -C test/
+
+interact: project
+	make interact -C test/
 
 clean:
 	make clean -C src/

@@ -1,6 +1,9 @@
 #include "system.hpp"
 #include <random>
 
+#define fs first
+#define sc second
+
 std::random_device rd;
 std::default_random_engine gen = std::default_random_engine(rd());
 std::default_random_engine gen2 = std::default_random_engine(rd());
@@ -8,10 +11,9 @@ std::default_random_engine gen2 = std::default_random_engine(rd());
 NodeSystem::NodeSystem(
     const int & n_vertex, const int & width, 
     const int & height, const double & temp, 
-    const int & niter, 
-    const std::vector< std::vector<int> > && relation)
+    const std::vector< std::pair<int, int> > && relation)
         : n_vertex(n_vertex), width(width), height(height), 
-          temp(temp), niter(niter), relation(relation) {
+          temp(temp), relation(relation) {
         
     std::uniform_real_distribution<> disx(0, width);
     std::uniform_real_distribution<> disy(0, height);
@@ -23,11 +25,14 @@ NodeSystem::NodeSystem(
     position.reserve(n_vertex);
     position_pr.reserve(n_vertex);
 
+    adj.resize(n_vertex);
+
     for (int i = 0; i < n_vertex; i++) {
-        if (i < (int)relation.size())
-            position.emplace_back(randfuncx(), randfuncy(), 1, static_cast<int>(relation[i].size()));
-        else
-            position.emplace_back(randfuncx(), randfuncy(), 1);
+        position.emplace_back(randfuncx(), randfuncy(), 1, static_cast<int>(adj[i].size()));
+    }
+
+    for (auto &i: relation) {
+        adj[i.fs].push_back(i.sc);
     }
 
     double area = (double) width * height;
@@ -40,13 +45,18 @@ void NodeSystem::run() {
     }
 }
 
+void NodeSystem::run_times(int n) {
+    for (int t = 0; t < n; t++) {
+        this->step(t);
+    }
+}
+
 void NodeSystem::step(int t) {
     this->init();
-    this->compute_attraction();
-    this->compute_repulsion();
+    this->compute_force();
     this->compute_gravity();
     this->update_position();
-    this->temp *= (1 - (double)t / this->niter);
+    this->temp *= std::max(1.0 , (1.0 - (double)t / this->niter));
 }
 
 void NodeSystem::init() {
@@ -54,37 +64,23 @@ void NodeSystem::init() {
         force[i] = Coord{0.0, 0.0, 0};
 }
 
-void NodeSystem::compute_attraction() {
-    // std::vector< std::vector<int> >::iterator row;
-    // std::vector<int>::iterator col;
-    
-    for (size_t row = 0; row < relation.size(); row++) {
-        for (size_t col = row+1; col < relation[row].size(); col++) {
-            int i = relation[row][0], j = relation[row][col];
+void NodeSystem::compute_force() {
+    for (int i = 0; i < n_vertex; i++) {
+        
+        // compute_attraction
+        for (auto &j: adj[i]) {
+            if (i >= j) continue;
+            
             double distance = dist(position[i], position[j]);
             double fa = f_attract(distance);
             Coord fa_xy = (position[j] - position[i]) * (fa / distance);
+            
             force[i] += fa_xy;
             force[j] -= fa_xy;
         }
-    }
-    
-    // for (row = relation.begin(); row != relation.end(); row++) {
-    //     for (col = row->begin() + 1; col != row->end(); col++) {
-    //         int i = *(row->begin()), j = *col;
-    //         double distance = dist(position[i], position[j]);
-    //         double fa = f_attract(distance);
-    //         Coord fa_xy = (position[j] - position[i]) * (fa / distance);
-            
-    //         force[i] += fa_xy;
-    //         force[j] -= fa_xy;
-    //     }
-    // }
-}
-
-void NodeSystem::compute_repulsion() {
-    for (size_t i = 0; i < force.size()-1; i++) {
-        for (size_t j = i+1; j < force.size(); j++) {
+        
+        // compute_repulsion
+        for (size_t j = i+1; j < n_vertex; j++) {
             double distance = dist(position[i], position[j]);
             double fr = f_repulse(distance);
             Coord fr_xy = (position[j] - position[i]) * (fr / distance);
@@ -94,20 +90,6 @@ void NodeSystem::compute_repulsion() {
         }
     }
 }
-
-/*
-void compute_gravity(int t) {
-    gamma = 0.2 * floor((double)t / 200);
-    Coord center = Coord{0.0, 0.0, 1};
-    for (int i = 0; i < n_vertex; i++) {
-        center += position[i];
-    }
-    center *= (1 / n_vertex);
-    for (int i = 0; i < force.size(); i++) {
-        force[i] += (center - position[i]) * gamma * position[i].mass;
-    }
-}
-*/
 
 void NodeSystem::compute_gravity() {
     Coord center = Coord{(double)this->width / 2, (double)this->height / 2, 1};
@@ -120,31 +102,15 @@ void NodeSystem::compute_gravity() {
     }
 }
 
-/*
-void update_position() {
-    for (int i = 0; i < n_vertex; i++) {
-        position[i] += min_with_scalar(force[i], I_max) * sigma;
-    }
-}
-*/
-
 void NodeSystem::update_position() {
     for (int i = 0; i < n_vertex; i++) {
         double modulo = force[i].x * force[i].x + force[i].y * force[i].y;
         if (modulo > this->temp) {
-            force[i].x = force[i].x * temp / modulo;
-            force[i].y = force[i].y * temp / modulo;
+            force[i] = force[i] * (temp / modulo);
         }
-        Coord tmp_pos = position[i] + force[i];
-        if (tmp_pos.x < 0.0)
-            tmp_pos.x = 0.0;
-        if (tmp_pos.x > (double)this->width)
-            tmp_pos.x = (double)this->width;
-        if (tmp_pos.y < 0.0)
-            tmp_pos.y = 0.0;
-        if (tmp_pos.y > (double)this->height)
-            tmp_pos.y = (double)this->height;
-        position[i] = tmp_pos;
+        position[i] += force[i];
+        position[i].x = std::min((double)width, std::max(-width / 2.0, position[i].x));
+        position[i].y = std::min((double)height, std::max(-height / 2.0, position[i].y));
     }
 }
 

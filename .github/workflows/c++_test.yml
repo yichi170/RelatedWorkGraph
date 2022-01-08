@@ -16,7 +16,7 @@ jobs:
 
     - name: dependency (ubuntu)
       run: |
-        apt -qy install \
+        sudo apt-get -qy install \
         make python3 python3-pip
 
     - id: step1
@@ -26,7 +26,11 @@ jobs:
     - id: step2
       name: test pybind11
       run: make pybind
-
+    
     - id: step3
       name: make test
       run: make test
+
+    - id: step4
+      name: make test
+      run: make testcpp
